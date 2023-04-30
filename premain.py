@@ -3,6 +3,10 @@ import json
 
 from telethon import TelegramClient
 from telethon.errors import SessionPasswordNeededError
+from telethon.tl.functions.messages import (GetHistoryRequest)
+from telethon.tl.types import (
+PeerChannel
+)
 
 config_path = r'/Users/dp_user/Documents/универ/диплом/config_tele.ini'
 
@@ -30,6 +34,48 @@ if not client.is_user_authorized():
     except SessionPasswordNeededError:
         client.sign_in(password=input('Password: '))
 
-print('success!')
+print('success1!')
 
+
+# part with channel
+
+user_input_channel = 'https://t.me/markettwits'
+
+if user_input_channel.isdigit():
+    entity = PeerChannel(int(user_input_channel))
+else:
+    entity = user_input_channel
+
+my_channel = client.get_entity(entity)
+
+print('success2!')
+
+# get channel messages
+
+history = client(GetHistoryRequest(
+    peer=my_channel,
+    offset_id=0,
+    offset_date=None,
+    add_offset=0,
+    limit=10,
+    max_id=0,
+    min_id=0,
+    hash=0
+))
+
+#TODO надо с этим разобраться, почему нет messages
+
+if not history.messages:
+        print("There's no messages")
+        raise FileNotFoundError
+
+all_messages = []
+messages = history.messages
+for message in messages:
+    all_messages.append(message.to_dict())
+
+print(f'Len of messages: {len(all_messages)}')
+print(f'Messages: \n {all_messages}')
+
+print('Success!3')
 
